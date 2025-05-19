@@ -46,6 +46,10 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsername(username);
     }
 
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
     // findAll method returns all the user present in the database. If not present it returns an empty list.
     @Override
     public List<User> findAll() {
