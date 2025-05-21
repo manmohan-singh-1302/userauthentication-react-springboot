@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     // findByUsername method takes in username of type string as an input and returns the user object if found else returns
-    // an empty list i.e. of type Optional<User> if not found.
+    // an empty list i.e., of type Optional<User> if not found.
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
     }
 
     // loadUserByUsername method takes in username as an input and returns user details(username, hashed password, and authorities) as an output.
-    // If the user is not found then it thorws UsernameNotFoundException.
+    // If the user is not found, then it throws UsernameNotFoundException.
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
       User user =  userRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException("User not found with username: "+ username));

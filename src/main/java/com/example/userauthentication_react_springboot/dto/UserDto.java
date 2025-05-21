@@ -26,12 +26,12 @@ public class UserDto {
     private Collection<Role> roles;
 
     public UserDto(User user) {
-        this.id = id;
-        this.email = email;
-        this.lastName = lastName;
-        this.firstName = firstName;
-        this.username = username;
-        this.roles = roles;
+        this.id = user.getId();
+        this.email = user.getEmail();
+        this.lastName = user.getLastName();
+        this.firstName = user.getFirstName();
+        this.username = user.getUsername();
+        this.roles = user.getRole();
     }
 
 }
