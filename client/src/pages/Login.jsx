@@ -16,7 +16,7 @@ function Login(){
     const handleSubmit = async (e) =>{
         e.preventDefault();
         try{
-            const response = await fetch("http://localhost:8080/api/auth/login",{
+            const response = await fetch("http://localhost:5454/api/auth/login",{
                 method:"POST",
                 headers:{
                     'Content-Type': 'application/json'
@@ -55,6 +55,9 @@ function Login(){
                     <button type="submit">Login</button>
                 </div>
                 {message && <p>{message}</p>}
+                <div>
+                    <a href="/forgot-password">Forgot password?</a>
+                </div>
             </form>
         </div>
     )

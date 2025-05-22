@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Register(){
     const [form, setForm] = useState({
@@ -9,6 +10,7 @@ function Register(){
         password: "",  
     })
 const [message, setMessage] = useState("");
+const navigate = useNavigate();
 const handleChange = (e) => {
     setForm({...form, [e.target.name]:e.target.value})
 }
@@ -16,7 +18,7 @@ const handleChange = (e) => {
 async function handleSubmit(e){
     e.preventDefault();
     try{
-        const response = await fetch("http://localhost:8080/api/users",{
+        const response = await fetch("http://localhost:5454/api/users",{
             method: "POST",
             headers:{
                 'Content-Type': 'application/json'
@@ -25,6 +27,7 @@ async function handleSubmit(e){
         })
         if(response.ok){
             setMessage("User registered successfully");
+            navigate("/login");
         }
         else{
             const data = await response.json();
