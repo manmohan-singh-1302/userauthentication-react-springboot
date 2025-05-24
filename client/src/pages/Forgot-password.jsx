@@ -1,33 +1,84 @@
-import { useNavigate } from "react-router-dom";
-
+import {useState } from "react";
+import {useNavigate } from "react-router-dom";
+import { forgotPassword } from "../services/authService";
+import "../styles/ForgotPassword.css";
 function ForgotPassword(){
-    const [form, setForm] = useState({
-        registeredEmail:""
-    })
-    const [message, setMessage] = useState("");
-    const navigate  = useNavigate();
+
+    const [registeredEmail, setRegisteredEmail] = useState("");
+    const [errors, seterrors] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const navigate = useNavigate();
+
     const handleChange = (e) =>{
-        setForm({...form, [e.target.name]:e.target.value})
+        setRegisteredEmail(e.target.value);
+        seterrors("");
+    };
+
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
     }
+
     const handleSubmit = async (e) =>{
         e.preventDefault();
-        try{
-            
+        setLoading(true);
+
+        if(!registeredEmail){
+            seterrors("Please enter your registered email");
+            setLoading(false);
+            return;
         }
+
+
+        if(!validateEmail(registeredEmail)){
+            seterrors("Please enter a valid email address");
+            setLoading(false);
+            return;
+        }
+    
+
+    try{
+        e.preventDefault();
+
+        await forgotPassword(email);
+        setSuccessMessage("OTP has been sent to your registered email");
+        navigate("/validate-otp", {state:{email}});
+
+
+    }catch(error){
+        seterrors(error.response?.data?.message || 'Failed to send OTP');
     }
+    finally{
+        setLoading(false);
+    }
+}
+
     return(
-        <div>
+        <div className="forgot-passwrod-container">
             <h2>Reset Password</h2>
+            <p className="description">Please enter your email address to receive a reset code</p>
+            {
+                successMessage && (
+                    <div className="success-message">{successMessage}</div>
+                )
+            }
             <form onSubmit={handleSubmit}>
-                <div>
+                <div className="form-group">
                     <label htmlFor="registeredEmail">Enter Registerd Email:</label>
-                    <input id="registeredEmail" name="registeredEmail" value={form.registeredEmail} autoFocus onChange={handleChange} required/>
+                    <input id="registeredEmail" name="registeredEmail" value={registeredEmail} autoFocus onChange={handleChange} required/>
                 </div>
+                {errors && (<div className="error-message">{errors}</div>)}
                 <div>
-                    <button type = "submit">Submit</button>
+                    <button type = "submit" className="submit-loading" disabled = {loading}>{loading?"Sending...":"Send Reset Code"}</button>
                 </div>
-                {message && <p>{message}</p>}
+                <div className="form-footer">
+                    <p>Remember your password? <a href="/login">Login here</a></p>
+                </div>
             </form>
         </div>
     )
 }
+
+export default ForgotPassword;

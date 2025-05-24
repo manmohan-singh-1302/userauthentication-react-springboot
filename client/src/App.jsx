@@ -4,6 +4,9 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import './App.css'
 import Home from './pages/Home'
+import ForgotPassword from './pages/Forgot-password'
+import ValidateOtp from './pages/ValidateOtp'
+import ResetPassword from './pages/ResetPassword'
 
 function App() {
 
@@ -14,11 +17,12 @@ function App() {
       <Route path="/login" element = {<Login/>}/>
       <Route path="/register" element = {<Register/>}/>
       <Route path = "/home" element = {<Home/>}/>
-      <Route path = "/forgot-password" element = {<div>Forgot Password</div>}/>
+      <Route path = "/forgot-password" element = {<ForgotPassword/>}/>
+      <Route path='/validate-otp' element = {<ValidateOtp/>}/>
+      <Route path='/reset-password' element = {<ResetPassword/>}/>
     </Routes>
     </BrowserRouter>
-    
   )
 }
 
-export default App
+export default App;

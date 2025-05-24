@@ -1,17 +1,18 @@
 package com.example.userauthentication_react_springboot.service.impl;
 
-import com.example.userauthentication_react_springboot.model.User;
-import com.example.userauthentication_react_springboot.repository.UserRepository;
-import com.example.userauthentication_react_springboot.service.UserService;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.example.userauthentication_react_springboot.model.User;
+import com.example.userauthentication_react_springboot.repository.UserRepository;
+import com.example.userauthentication_react_springboot.service.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -109,6 +110,15 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Current password is incorrect");
         }
 
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+    @Override
+    public void resetPassword(Long id, String newPassword) {
+        User user = userRepository.findById(id).orElseThrow(() ->
+                new RuntimeException("User not found"));
+        
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }

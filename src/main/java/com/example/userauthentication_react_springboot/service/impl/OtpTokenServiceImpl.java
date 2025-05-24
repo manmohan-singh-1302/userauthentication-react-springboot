@@ -1,5 +1,10 @@
 package com.example.userauthentication_react_springboot.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
 import com.example.userauthentication_react_springboot.model.OtpToken;
 import com.example.userauthentication_react_springboot.model.User;
 import com.example.userauthentication_react_springboot.repository.OtpTokenRepository;
@@ -7,9 +12,7 @@ import com.example.userauthentication_react_springboot.service.MailService;
 import com.example.userauthentication_react_springboot.service.OtpTokenService;
 import com.example.userauthentication_react_springboot.util.OtpUtil;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-
+@Service
 public class OtpTokenServiceImpl implements OtpTokenService {
 
     private final OtpTokenRepository otpTokenRepository;
@@ -49,7 +52,7 @@ public class OtpTokenServiceImpl implements OtpTokenService {
     * */
     @Override
     public Optional<OtpToken> getValidOtp(User user,String otp) {
-        Optional<OtpToken> otpToken = otpTokenRepository.findByUserandOtp(user, otp);
+        Optional<OtpToken> otpToken = otpTokenRepository.findByUserAndOtp(user, otp);
         return otpToken.filter(token->token.getExpiryTime().isAfter(LocalDateTime.now()));
     }
 
@@ -62,8 +65,8 @@ public class OtpTokenServiceImpl implements OtpTokenService {
     }
 
     @Override
-    public boolean isValidOtp(User user, String enteredOtp){
-        Optional<OtpToken> otpToken = otpTokenRepository.findByUserandOtp(user, enteredOtp);
+    public boolean isCorrectOtp(User user, String enteredOtp){
+        Optional<OtpToken> otpToken = otpTokenRepository.findByUserAndOtp(user, enteredOtp);
         return otpToken.filter(token -> token.getExpiryTime().isAfter(LocalDateTime.now())).isPresent();
     }
 }

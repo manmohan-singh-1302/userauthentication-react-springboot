@@ -11,5 +11,5 @@ public interface OtpTokenService {
     Optional<OtpToken> getValidOtp(User user,String otp);
     void deleteOtp(User user);
 
-    boolean isValidOtp(User user, String enteredOtp);
+    boolean isCorrectOtp(User user, String enteredOtp);
 }
