@@ -1,13 +1,10 @@
 package com.example.userauthentication_react_springboot.config;
 
-import com.example.userauthentication_react_springboot.service.UserService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,9 +12,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.crypto.SecretKey;
-import java.io.IOException;
-import java.util.Date;
+import com.example.userauthentication_react_springboot.service.UserService;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /*
 * This JwtTokenValidation class extends OncePerRequestFilter i.e., this will run everytime an api is hit. 
@@ -41,50 +43,63 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
-        // Skip JWT validation for public endpoints
+        
         String path = request.getRequestURI();
-        if (path.startsWith("/api/auth/") || path.startsWith("/api/users/")) {
+        
+        // Skip JWT validation for public endpoints
+        if (path.startsWith("/api/auth/") || 
+            path.equals("/api/users") || 
+            path.equals("/api/users/register") ||
+            path.startsWith("/api/users/verify-email/") ||
+            path.startsWith("/api/users/reset-password/") ||
+            path.startsWith("/api/users/forgot-password/")) {
             filterChain.doFilter(request, response);
             return;
         }
-        String authHeader =request.getHeader("Authorization");
-//        if(jwt!=null && jwt.startsWith("Bearer ")){
-//            jwt = jwt.substring(7);
-//        }
 
-        /*
-         * If authentication header is null or authenticationHeader does not start with Bearer, then we can skip
-         * this filter and return to the next filter in the security chain.
-         * */
+        String authHeader = request.getHeader("Authorization");
+        
+        // If no Authorization header, continue to next filter
         if(authHeader == null || !authHeader.startsWith("Bearer ")){
             filterChain.doFilter(request, response);
             return;
         }
 
-        // extract jwt token form the authHeader which starts from the 7th index of the string.
-        String jwt = authHeader.substring(7);
-        try{
+        try {
+            // Extract JWT token
+            String jwt = authHeader.substring(7);
             SecretKey key = jwtProvider.getSignInKey();
-            Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(jwt).getPayload();
-            String username = claims.get("username", String.class);
-            String email = String.valueOf(claims.get("email"));
+            
+            // Parse and validate token
+            Claims claims = Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(jwt)
+                    .getPayload();
 
-            // If the token is expired, then throw BadCredentialsException "JWT Token expired'.
+            String username = claims.get("username", String.class);
+            
+            // Check token expiration
             if(claims.getExpiration().before(new Date())){
                 throw new BadCredentialsException("JWT Token expired.");
             }
 
-            // If the user is not authenticated, then update the securityContext
-            if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null){
+            // Set authentication if not already set
+            if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
                 UserDetails userDetails = userService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    userDetails, 
+                    null, 
+                    userDetails.getAuthorities()
+                );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-        }catch (Exception e){
-            throw new BadCredentialsException("Invalid Jwt Token.....");
+            
+            filterChain.doFilter(request, response);
+            
+        } catch (Exception e) {
+            SecurityContextHolder.clearContext();
+            throw new BadCredentialsException("Invalid JWT Token: " + e.getMessage());
         }
-
-        filterChain.doFilter(request, response);
     }
 }

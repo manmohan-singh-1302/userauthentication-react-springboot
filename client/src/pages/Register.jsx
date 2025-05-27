@@ -86,8 +86,8 @@ const handleSubmit = async (e) => {
         navigate("/login",{
             state:{message:"Registration successful! Please login."}
     })
-    }catch (err){
-        seterrors({
+    }catch (error){
+        setErrors({
             submit: error.response?.data?.message || "Failed to register. Please try again"
         });   
     }finally{
