@@ -47,7 +47,7 @@ export const login = async (formData) => {
 // Forgot Password
 export const forgotPassword = async (email) => {
   try {
-    const response = await axios.post(`${API_URL}/auth/forgot-password`, email);
+    const response = await axios.post(`${API_URL}/auth/forgot-password`, { registeredEmail: email });
     return response.data;
   } catch (error) {
     throw error;
@@ -57,7 +57,7 @@ export const forgotPassword = async (email) => {
 // Validate OTP
 export const validateOtp = async (email, otp) => {
   try {
-    const response = await axios.post(`${API_URL}/auth/validate-otp?email=${email}`, otp);
+    const response = await axios.post(`${API_URL}/auth/validate-otp?email=${email}`, { otp });
     return response.data;
   } catch (error) {
     throw error;
@@ -69,7 +69,10 @@ export const resetPassword = async (email, newPassword) => {
   try {
     const response = await axios.post(
       `${API_URL}/auth/reset-password?email=${email}`, 
-      { newPassword, confirmPassword: newPassword }
+      { 
+        newPassword, 
+        confirmPassword: newPassword 
+      }
     );
     return response.data;
   } catch (error) {

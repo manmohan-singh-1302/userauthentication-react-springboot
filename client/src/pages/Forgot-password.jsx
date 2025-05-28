@@ -21,7 +21,7 @@ function ForgotPassword(){
         return emailRegex.test(email);
     }
 
-    const handleSubmit = async (e) =>{
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
@@ -31,29 +31,22 @@ function ForgotPassword(){
             return;
         }
 
-
         if(!validateEmail(registeredEmail)){
             seterrors("Please enter a valid email address");
             setLoading(false);
             return;
         }
-    
 
-    try{
-        e.preventDefault();
-
-        await forgotPassword(email);
-        setSuccessMessage("OTP has been sent to your registered email");
-        navigate("/validate-otp", {state:{email}});
-
-
-    }catch(error){
-        seterrors(error.response?.data?.message || 'Failed to send OTP');
+        try {
+            await forgotPassword(registeredEmail);
+            setSuccessMessage("OTP has been sent to your registered email");
+            navigate("/validate-otp", {state: {email: registeredEmail}});
+        } catch(error) {
+            seterrors(error.response?.data?.message || 'Failed to send OTP');
+        } finally {
+            setLoading(false);
+        }
     }
-    finally{
-        setLoading(false);
-    }
-}
 
     return(
         <div className="forgot-passwrod-container">

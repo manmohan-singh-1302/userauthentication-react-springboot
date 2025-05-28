@@ -6,7 +6,8 @@ import './App.css'
 import Home from './pages/Home'
 import ForgotPassword from './pages/Forgot-password'
 import ValidateOtp from './pages/ValidateOtp'
-import ResetPassword from './pages/ResetPassword'
+import ResetPassword from './pages/Reset-password'
+
 
 function App() {
 

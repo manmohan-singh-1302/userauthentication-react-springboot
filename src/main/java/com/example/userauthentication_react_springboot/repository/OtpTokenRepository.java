@@ -10,4 +10,5 @@ import com.example.userauthentication_react_springboot.model.User;
 public interface OtpTokenRepository extends JpaRepository<OtpToken, Long> {
     Optional<OtpToken> findByUserAndOtp(User user, String otp);
     void deleteByUser(User user);
+    Optional<OtpToken> findByUser(User user);
 }

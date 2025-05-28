@@ -7,7 +7,7 @@ function ValidateOtp () {
     const [otp, setOtp] = useState("");
     const [loading, setLoading] = useState(false);
     const [errors, setErrors ] = useState("");
-    const [email, setEmail] = "";
+    const [email, setEmail] = useState("");
     const [timeLeft, setTimeLeft] = useState(300);
 
     const navigate = useNavigate();
@@ -66,7 +66,7 @@ const handleSubmit = async (e) => {
     }
 
     try{
-        await validateOtp(otp);
+        await validateOtp(email, otp);
         navigate("/reset-password", {state:{email}});
     } catch (error) {
         setErrors(error.response?.data?.message || "Invalid OTP");
